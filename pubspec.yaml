@@ -3,3 +3,4 @@ version: 0.0.1
 
 dev_dependencies:
   test: ^1.5.1
+  http: ^0.12.0
