@@ -1,15 +1,23 @@
+import "package:http/http.dart" as http;
 import "dart:convert" show json;
-import 'constants.dart';
+import "constants.dart";
 import "api_client.dart";
 import "mock_api_client.dart";
 
 class Dropbox {
 	String _accessToken;
-	bool _isMock;
+	bool _stubResponses;
+	http.Client _client;
 
-	Dropbox(String accessToken, {bool isMock: false}) {
+	Dropbox(String accessToken, {bool stubResponses: false}) {
 		_accessToken = accessToken;
-		_isMock = isMock;
+		_stubResponses = stubResponses;
+
+		if (_stubResponses) {
+			_client = new MockApiClient();
+		} else {
+			_client = new ApiClient(_accessToken);
+		}
 	}
 
 	String get accessToken {
@@ -17,15 +25,7 @@ class Dropbox {
 	}
 
 	Future<dynamic> getCurrentAccount() {
-		var client;
-
-		if (_isMock) {
-			client = new MockApiClient();
-		} else {
-			client = new ApiClient(_accessToken);
-		}
-
-		return client
+		return _client
 			.post(_apiUrl(dropboxEndpoints["users"]["getCurrentAccount"]))
 			.then((response) {
 				return {
@@ -33,7 +33,7 @@ class Dropbox {
 					"statusCode": response.statusCode
 				};
 			})
-			.whenComplete(client.close);
+			.whenComplete(_client.close);
 	}
 
 	String _apiUrl(String endpoint) {

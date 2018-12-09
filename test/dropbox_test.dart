@@ -2,7 +2,7 @@ import "package:dropbox_sdk_dart/dropbox_sdk_dart.dart";
 import "package:test/test.dart";
 
 void main() {
-	var dropbox = new Dropbox("secretToken", isMock: true);
+	var dropbox = new Dropbox("secretToken", stubResponses: true);
 
   test("accessToken getter", () {
     expect(dropbox.accessToken, equals("secretToken"));
